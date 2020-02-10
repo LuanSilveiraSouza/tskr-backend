@@ -1,15 +1,29 @@
 const User = require('../models/User');
+const bcrypt = require('bcrypt');
 
 module.exports = {
     async add(req, res) {
         const {name, password} = req.body;
+        let msg;
 
-        const user = await User.create({
-            name, 
-            password
-        })
-
-        return res.json(user);
+        if(password.length >= 6) {
+            if(await User.findOne({name}) == null) {
+                bcrypt.hash(password, 10, function(err, hash) {
+                    const user = User.create({
+                        name: name, 
+                        password: hash
+                    })
+            
+                    msg= 'Usuário cadastrado';
+                });
+            } else {
+                msg= 'Nome de usuário já existente';
+            }
+        } else {
+            msg= 'Senha muito curta';
+        }
+        
+        return res.json({msg});
     },
 
     async list(req, res) {
