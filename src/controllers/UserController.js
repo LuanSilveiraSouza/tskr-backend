@@ -2,6 +2,31 @@ const User = require('../models/User');
 const bcrypt = require('bcrypt');
 
 module.exports = {
+    async login(req, res) {
+        const {name, password} = req.body;
+        const users = await User.find();
+
+        let authorized;
+        let msg;
+
+        const user = users.filter((item) => {
+            return item.name === name;
+        });
+        if(user.length === 0) {
+            msg = 'Usuário não cadastrado';
+            authorized = false;
+        } else {
+            authorized = await bcrypt.compare(password, user[0].password);
+            if(authorized) {
+                msg = 'Login bem sucedido';
+            } else {
+                msg = 'Senha incorreta';
+            }
+        }
+
+        return res.json({msg, authorized});
+    },
+
     async add(req, res) {
         const {name, password} = req.body;
         let msg;
