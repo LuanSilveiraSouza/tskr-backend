@@ -1,11 +1,10 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
+const routes = require('./routes.js');
 require('dotenv/config');
 
 const app = express();
-app.use(express.json());
-app.use(cors());
 
 async function connect() {
     await mongoose.connect(process.env.DB_URI, {useNewUrlParser: true, useUnifiedTopology: true})
@@ -19,10 +18,10 @@ async function connect() {
 
 connect();
 
-app.get('/', function(res, res) {
-    res.send('Hello World!!!');
-})
+app.use(express.json());
+app.use(cors());
+app.use(routes);
 
-app.listen(3050, function() {
-    console.log('listening on port 3050');
+app.listen(3030, function() {
+    console.log('listening on port 3030');
 });
